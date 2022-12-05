@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿namespace Catalog.API.Controllers;
 
-namespace Catalog.API.Controllers
+public class CatalogController : ApiBaseController
 {
-    public class CatalogController : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
-    }
 }

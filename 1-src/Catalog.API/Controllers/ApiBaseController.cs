@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.API.Controllers
+namespace Catalog.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ApiBaseController : ControllerBase
 {
-    public class ApiBaseController : Controller
+    public ApiBaseController()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+
     }
 }
