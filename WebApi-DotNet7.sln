@@ -9,6 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-tests", "2-tests", "{2E60
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "1-src\Catalog.API\Catalog.API.csproj", "{7D8C6943-DF80-4E2C-A2B0-4D54EDAAE908}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-Unit.Tests", "1-Unit.Tests", "{CD47D8FA-8803-400E-905A-986F3C15C31B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-Integration.Tests", "2-Integration.Tests", "{968A0C80-C130-4EB6-BD78-9CFF98329312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7D8C6943-DF80-4E2C-A2B0-4D54EDAAE908} = {E77BA480-50E5-4DAE-ABBD-0CD0F297EF32}
+		{CD47D8FA-8803-400E-905A-986F3C15C31B} = {2E609DC0-BE8F-4364-9950-6E5308553F95}
+		{968A0C80-C130-4EB6-BD78-9CFF98329312} = {2E609DC0-BE8F-4364-9950-6E5308553F95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {322E2DCB-983D-4C2A-BE87-EBF1FF121BF9}
