@@ -1,5 +1,8 @@
-﻿namespace Catalog.API.Controllers;
+﻿using Microsoft.AspNetCore.Mvc;
 
+namespace Catalog.API.Controllers;
+
+[Produces("application/json")]
 public class CatalogController : ApiBaseController
 {
     private static List<Catalog> _inMemoryDb = new List<Catalog> {
@@ -10,9 +13,78 @@ public class CatalogController : ApiBaseController
         new Catalog { ImageUrl = "https://m.media-amazon.com/images/I/71wXQyxCENL._AC_SL1500_.jpg",Name = "Tatybo Gaming Headset", Rating = 4.5f, Description="Tatybo Gaming Headset for PS4 PS5 Xbox One Switch PC with Noise Canceling Mic, Deep Bass Stereo Sound", Price = 21.99m },
     };
 
+    /// <summary>
+    /// Get catalogs
+    /// </summary>
+    /// <returns>List of catalogs sorted by creation date DESC</returns>
+    /// <response code="200">Returns the list of catalogs sorted by creation date DESC</response>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public ActionResult<IEnumerable<Catalog>> Get()
+    {
+        return Ok(_inMemoryDb);
+    }
 
+    /// <summary>
+    /// Get catalog by Id
+    /// </summary>
+    /// <param name="id">Catalog's Id</param>
+    /// <returns>Catalog details</returns>
+    /// <response code="200">Returns the catalog's details</response>
+    /// <response code="404">If no catalog found</response>
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public ActionResult<Catalog> Get(Guid id)
+    {
+        return Ok(_inMemoryDb.OrderByDescending(catalog => catalog.Name).First());
+    }
+
+    /// <summary>
+    /// Add catalog
+    /// </summary>
+    /// <param name="catalog"></param>
+    /// <returns>The created catalog</returns>
+    /// <response code="201">The created catalog's details</response>
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public ActionResult<Catalog> Add(Catalog catalog)
+    {
+        _inMemoryDb.Add(catalog);
+
+        return StatusCode(StatusCodes.Status201Created, catalog);
+    }
+
+    /// <summary>
+    /// Update an existing catalog
+    /// </summary>
+    /// <returns></returns>
+    /// <response code="204">The update done successfully</response>
+    /// <response code="404">If no catalog found</response>
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Put()
+    {
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Delete an existing catalog by Id
+    /// </summary>
+    /// <param name="id">Catalog's Id</param>
+    /// <returns></returns>
+    /// <response code="204">The deletion done successfully</response>
+    /// <response code="404">If no catalog found</response>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Delete(Guid id)
+    {
+        return NoContent();
+    }
 }
-record Catalog
+public record Catalog
 {
     public Guid Id => Guid.NewGuid();
     public required string ImageUrl { get; set; }
