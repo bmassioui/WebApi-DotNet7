@@ -6,8 +6,10 @@ namespace Catalog.API.Controllers;
 [Route("api/[controller]")]
 public abstract class ApiBaseController : ControllerBase
 {
-    public ApiBaseController()
-    {
+    protected readonly CatalogDbContext _catalogDbContext;
 
+    public ApiBaseController(CatalogDbContext catalogDbContext)
+    {
+        _catalogDbContext = catalogDbContext ?? throw new ArgumentNullException(nameof(catalogDbContext), "Unable to resolve Catalog Db Context");
     }
 }

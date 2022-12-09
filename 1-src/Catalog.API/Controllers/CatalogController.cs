@@ -3,68 +3,64 @@
 namespace Catalog.API.Controllers;
 
 [Produces("application/json")]
-public class CatalogEntityController : ApiBaseController
+public class CatalogController : ApiBaseController
 {
-    private static List<Product> _inMemoryDb = new()
+    public CatalogController(CatalogDbContext catalogDbContext) : base(catalogDbContext)
     {
-        new Product { Id = Guid.Parse("bd2ae998-e95a-45d7-8cbe-61934c85d6b1"), ImageUrl = new Uri("https://m.media-amazon.com/images/I/61IiCJ7QggS._AC_SL1500_.jpg"),Name = "Logitech G305 LIGHTSPEED Wireless Gaming Mouse", Rating = 4.5f, Description="Logitech G305 LIGHTSPEED Wireless Gaming Mouse, Hero 12K Sensor, 12,000 DPI, Lightweight, 6 Programmable Buttons, 250h Battery Life, On-Board Memory, PC/Mac - Mint", Price = 41.90m },
-        new Product { Id = Guid.Parse("b0d711dd-5867-42f7-bc76-41605f9f20df"), ImageUrl = new Uri("https://m.media-amazon.com/images/I/61AuRwdIkrL._AC_SL1500_.jpg"),Name = "Portable 60% Mechanical Gaming Keyboard", Rating = 4.5f, Description="Portable 60% Mechanical Gaming Keyboard, MageGee MK-Box LED Backlit Compact 68 Keys Mini Wired Office Keyboard with Red Switch for Windows Laptop PC Mac - White/Blue.", Price = 29.99m },
-        new Product { Id = Guid.Parse("b8082aca-0dc6-47ec-94c3-d4e7a88239c4"), ImageUrl = new Uri("https://m.media-amazon.com/images/I/61qItTcisGL._AC_SL1000_.jpg"),Name = "ZD-V+ USB Wired Gaming Controller Gamepad", Rating = 4, Description="ZD-V+ USB Wired Gaming Controller Gamepad For PC/Laptop Computer(Windows XP/7/8/10/11) & PS3 & Android & Steam - [Black].", Price = 19.99m },
-        new Product { Id = Guid.Parse("b4ddafbe-317d-4206-8e5e-403316c98ae3"), ImageUrl = new Uri("https://m.media-amazon.com/images/I/61O7HHu181L._AC_SL1500_.jpg"),Name = "Logitech G920 Driving Force Racing Wheel and Floor Pedals", Rating = 5, Description="Logitech G920 Driving Force Racing Wheel and Floor Pedals, Real Force Feedback, Stainless Steel Paddle Shifters, Leather Steering Wheel Cover for Xbox Series X|S, Xbox One, PC, Mac - Black", Price = 299.99m },
-        new Product { Id = Guid.Parse("23552541-7ee2-44ec-9002-b8cd61a6988c"), ImageUrl = new Uri("https://m.media-amazon.com/images/I/71wXQyxCENL._AC_SL1500_.jpg"),Name = "Tatybo Gaming Headset", Rating = 4.5f, Description="Tatybo Gaming Headset for PS4 PS5 Xbox One Switch PC with Noise Canceling Mic, Deep Bass Stereo Sound", Price = 21.99m },
-    };
+    }
 
     /// <summary>
-    /// Get CatalogEntitys
+    /// Get Proucts
     /// </summary>
-    /// <returns>List of CatalogEntitys sorted by creation date DESC</returns>
-    /// <response code="200">Returns the list of CatalogEntitys sorted by creation date DESC</response>
+    /// <returns>List of Product sorted by creation date DESC</returns>
+    /// <response code="200">Returns the list of Product sorted by creation date DESC</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<Product>> Get()
     {
-        return Ok(_inMemoryDb);
+        return Ok(_catalogDbContext.Products.ToList());
     }
 
     /// <summary>
-    /// Get CatalogEntity by Id
+    /// Get Product by Id
     /// </summary>
-    /// <param name="id">CatalogEntity's Id</param>
-    /// <returns>CatalogEntity details</returns>
-    /// <response code="200">Returns the CatalogEntity's details</response>
-    /// <response code="404">If no CatalogEntity found</response>
+    /// <param name="productId">Product's Id</param>
+    /// <returns>Product's details</returns>
+    /// <response code="200">Returns the Product's details</response>
+    /// <response code="404">If no Product found</response>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Product> Get(Guid id)
+    public ActionResult<Product> Get(Guid productId)
     {
-        return Ok(_inMemoryDb.Find(CatalogEntity => CatalogEntity.Id == id));
+        return Ok(_catalogDbContext.Products.Find(productId));
     }
 
     /// <summary>
-    /// Add CatalogEntity
+    /// Add Product to catalog
     /// </summary>
-    /// <param name="CatalogEntity"></param>
-    /// <returns>The created CatalogEntity</returns>
-    /// <response code="201">The created CatalogEntity's details</response>
-    /// <response code="400">Unable to create CatalogEntity</response>
+    /// <param name="product"></param>
+    /// <returns>The created Product</returns>
+    /// <response code="201">The created Product's details</response>
+    /// <response code="400">Unable to create Product</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<Product> Add(Product CatalogEntity)
+    public ActionResult<Product> Add(Product product)
     {
-        _inMemoryDb.Add(CatalogEntity);
+        _catalogDbContext.Products.Add(product);
+        _catalogDbContext.SaveChanges();
 
-        return CreatedAtAction(nameof(Get), new { CatalogEntity.Id }, CatalogEntity);
+        return CreatedAtAction(nameof(Get), new { product.Id }, product);
     }
 
     /// <summary>
-    /// Update an existing CatalogEntity
+    /// Update Product in Catalog
     /// </summary>
     /// <returns></returns>
     /// <response code="204">The update done successfully</response>
-    /// <response code="404">If no CatalogEntity found</response>
-    /// <response code="400">Unable to update CatalogEntity</response>
+    /// <response code="404">If no Product found</response>
+    /// <response code="400">Unable to update Product</response>
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -75,18 +71,18 @@ public class CatalogEntityController : ApiBaseController
     }
 
     /// <summary>
-    /// Delete an existing CatalogEntity by Id
+    /// Delete Product from Catalog by Id
     /// </summary>
-    /// <param name="id">CatalogEntity's Id</param>
+    /// <param name="productId">Product's Id</param>
     /// <returns></returns>
     /// <response code="204">The deletion done successfully</response>
-    /// <response code="404">If no CatalogEntity found</response>
-    /// <response code="400">Unable to delete CatalogEntity</response>
+    /// <response code="404">If no Product found</response>
+    /// <response code="400">Unable to delete Product</response>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Delete(Guid id)
+    public IActionResult Delete(Guid productId)
     {
         return NoContent();
     }
