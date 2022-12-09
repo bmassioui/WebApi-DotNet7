@@ -1,9 +1,11 @@
+using Catalog.API;
 using Catalog.API.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddWebApiServices();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<CatalogDbContext>(opt => opt.UseInMemoryDatabase("CatalogDb"));
