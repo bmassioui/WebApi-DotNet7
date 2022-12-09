@@ -6,8 +6,7 @@ namespace Catalog.API.Controllers;
 public class CatalogController : ApiBaseController
 {
     public CatalogController(CatalogDbContext catalogDbContext) : base(catalogDbContext)
-    {
-    }
+    { }
 
     /// <summary>
     /// Get Proucts
@@ -28,7 +27,7 @@ public class CatalogController : ApiBaseController
     /// <returns>Product's details</returns>
     /// <response code="200">Returns the Product's details</response>
     /// <response code="404">If no Product found</response>
-    [HttpGet("{id:guid}")]
+    [HttpGet("{productId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<Product> Get(Guid productId)
@@ -78,7 +77,7 @@ public class CatalogController : ApiBaseController
     /// <response code="204">The deletion done successfully</response>
     /// <response code="404">If no Product found</response>
     /// <response code="400">Unable to delete Product</response>
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{productId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
