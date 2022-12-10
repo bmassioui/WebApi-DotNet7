@@ -37,6 +37,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         await _dbSet.AddAsync(entity);
     }
 
+    public async Task SaveChangeAsync(CancellationToken cancellationToken = default)
+    {
+        await _catalogDbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public void Update(TEntity entity)
     {
         _dbSet.Attach(entity);

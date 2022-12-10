@@ -28,6 +28,12 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     Task InsertAsync(TEntity entity);
 
     /// <summary>
+    /// Save pending changes asynchronously
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    Task SaveChangeAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Update entity
     /// </summary>
     /// <param name="entity">Entity to update</param>

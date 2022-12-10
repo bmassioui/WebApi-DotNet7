@@ -5,18 +5,13 @@ namespace Catalog.API.Services;
 public class ProductService : IProductService
 {
     private readonly IBaseRepository<Product> _baseRepository;
-    private readonly ICatalogUoW _catalogUoW;
 
-    public ProductService(IBaseRepository<Product> baseRepository, ICatalogUoW catalogUoW)
-    {
-        _baseRepository = baseRepository;
-        _catalogUoW = catalogUoW;
-    }
+    public ProductService(IBaseRepository<Product> baseRepository) => _baseRepository = baseRepository;
 
     public async Task AddAsync(Product product)
     {
         await _baseRepository.InsertAsync(product);
-        await _catalogUoW.CommitAsync();
+        await _baseRepository.SaveChangeAsync();
     }
 
     public async Task<Product?> GetByIdAsync(Guid id)
@@ -38,6 +33,6 @@ public class ProductService : IProductService
     public async Task UpdateAsync(Product product)
     {
         _baseRepository.Update(product);
-        await _catalogUoW.CommitAsync();
+        await _baseRepository.SaveChangeAsync();
     }
 }
