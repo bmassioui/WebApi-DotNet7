@@ -1,12 +1,14 @@
-﻿using System.Linq.Expressions;
+﻿using AutoMapper;
+using System.Linq.Expressions;
 
 namespace Catalog.API.Services;
 
 public class ProductService : IProductService
 {
     private readonly IBaseRepository<Product> _baseRepository;
+    private readonly IMapper _mapper;
 
-    public ProductService(IBaseRepository<Product> baseRepository) => _baseRepository = baseRepository;
+    public ProductService(IBaseRepository<Product> baseRepository, IMapper mapper) => (_baseRepository, _mapper) = (baseRepository, mapper);
 
     public async Task AddAsync(Product product)
     {
@@ -14,14 +16,14 @@ public class ProductService : IProductService
         await _baseRepository.SaveChangeAsync();
     }
 
-    public async Task<Product?> GetByIdAsync(Guid id)
+    public async Task<ReadProduct?> GetByIdAsync(Guid id)
     {
-        return await _baseRepository.GetByIdAsync(id);
+        return _mapper.Map<ReadProduct?>(await _baseRepository.GetByIdAsync(id));
     }
 
-    public async Task<IEnumerable<Product>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "")
+    public async Task<IEnumerable<ReadProduct>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "")
     {
-        return await _baseRepository.GetAsync(filter, orderBy, includeProperties);
+        return _mapper.Map<IEnumerable<ReadProduct>>(await _baseRepository.GetAsync(filter, orderBy, includeProperties));
     }
 
     public async Task MarkAsDeleted(Product product)

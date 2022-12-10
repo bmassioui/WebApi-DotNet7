@@ -16,7 +16,7 @@ public class CatalogController : ApiBaseController
     /// <response code="200">Returns the list of product sorted by creation date DESC</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<Product>>> Get()
+    public async Task<ActionResult<IEnumerable<ReadProduct>>> Get()
     {
         var products = await _productService.GetProductsAsync(orderBy: products => products.OrderByDescending(product => product.CreatedAt));
 
@@ -33,7 +33,7 @@ public class CatalogController : ApiBaseController
     [HttpGet("{productId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Product>> Get(Guid productId)
+    public async Task<ActionResult<ReadProduct>> Get(Guid productId)
     {
         var product = await _productService.GetByIdAsync(productId);
 

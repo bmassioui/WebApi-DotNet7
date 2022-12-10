@@ -16,7 +16,7 @@ namespace Catalog.API.Interfaces.Services
         /// </summary>
         /// <param name="id">Product identitifer</param>
         /// <returns></returns>
-        Task<Product?> GetByIdAsync(Guid id);
+        Task<ReadProduct?> GetByIdAsync(Guid id);
 
         /// <summary>
         /// Get products asynchronously
@@ -25,7 +25,7 @@ namespace Catalog.API.Interfaces.Services
         /// <param name="orderBy">Order the result</param>
         /// <param name="includeProperties">Include properties into the result, supports multiple properties separated by ',' character</param>
         /// <returns></returns>
-        Task<IEnumerable<Product>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "");
+        Task<IEnumerable<ReadProduct>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "");
        
         /// <summary>
         /// Mark product as soft deleted
