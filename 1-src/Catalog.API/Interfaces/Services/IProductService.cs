@@ -12,14 +12,14 @@ namespace Catalog.API.Interfaces.Services
         Task AddAsync(Product product);
 
         /// <summary>
-        /// Get Product by Id asynchronously
+        /// Get product by ID asynchronously
         /// </summary>
-        /// <param name="id">Product Identitifer</param>
+        /// <param name="id">Product identitifer</param>
         /// <returns></returns>
         Task<Product?> GetByIdAsync(Guid id);
 
         /// <summary>
-        /// Get Products asynchronously
+        /// Get products asynchronously
         /// </summary>
         /// <param name="filter">Filter the result</param>
         /// <param name="orderBy">Order the result</param>
@@ -28,14 +28,14 @@ namespace Catalog.API.Interfaces.Services
         Task<IEnumerable<Product>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "");
        
         /// <summary>
-        /// Mark Product as soft deleted
+        /// Mark product as soft deleted
         /// </summary>
         /// <param name="product">Product to delete</param>
         /// <returns></returns>
         Task MarkAsDeleted(Product product);
 
         /// <summary>
-        /// Update Product asynchronously
+        /// Update product asynchronously
         /// </summary>
         /// <param name="product">Product to update</param>
         /// <returns></returns>

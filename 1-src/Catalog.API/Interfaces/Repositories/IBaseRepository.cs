@@ -14,7 +14,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "");
 
     /// <summary>
-    /// Get entity by Id asynchronously
+    /// Get entity by ID asynchronously
     /// </summary>
     /// <param name="id">Entity identifier</param>
     /// <returns></returns>
