@@ -2,10 +2,8 @@
 
 namespace Catalog.API.Models;
 
-public record UpdateProduct
+public record AddProduct
 {
-    public Guid Id { get; set; }
-
     [Required(ErrorMessage = "Image Url is required.", AllowEmptyStrings = false)]
     public required Uri ImageUrl { get; set; }
 

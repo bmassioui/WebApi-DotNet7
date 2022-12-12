@@ -7,9 +7,9 @@ namespace Catalog.API.Interfaces.Services
         /// <summary>
         /// Add product asynchronously
         /// </summary>
-        /// <param name="product">Product to add</param>
+        /// <param name="addProduct">Product to add</param>
         /// <returns></returns>
-        Task AddAsync(Product product);
+        Task<ReadProduct> AddAsync(AddProduct addProduct);
 
         /// <summary>
         /// Get product by ID asynchronously
@@ -26,19 +26,19 @@ namespace Catalog.API.Interfaces.Services
         /// <param name="includeProperties">Include properties into the result, supports multiple properties separated by ',' character</param>
         /// <returns></returns>
         Task<IEnumerable<ReadProduct>> GetProductsAsync(Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null, string includeProperties = "");
-       
+
         /// <summary>
         /// Mark product as soft deleted
         /// </summary>
-        /// <param name="product">Product to delete</param>
-        /// <returns></returns>
-        Task MarkAsDeleted(Product product);
+        /// <param name="id">Product's ID</param>
+        /// <returns>True if the deletion done, else False if no product could be found</returns>
+        Task<bool> MarkAsDeletedAsync(Guid id);
 
         /// <summary>
         /// Update product asynchronously
         /// </summary>
-        /// <param name="product">Product to update</param>
-        /// <returns></returns>
-        Task UpdateAsync(Product product);
+        /// <param name="updateProduct">Product to update</param>
+        /// <returns>True if the update done, else False if no product could be found</returns>
+        Task<bool> UpdateAsync(UpdateProduct updateProduct);
     }
 }

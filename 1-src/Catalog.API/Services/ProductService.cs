@@ -10,10 +10,14 @@ public class ProductService : IProductService
 
     public ProductService(IBaseRepository<Product> baseRepository, IMapper mapper) => (_baseRepository, _mapper) = (baseRepository, mapper);
 
-    public async Task AddAsync(Product product)
+    public async Task<ReadProduct> AddAsync(AddProduct addProduct)
     {
-        await _baseRepository.InsertAsync(product);
+        var productToCreate = _mapper.Map<Product>(addProduct);
+
+        await _baseRepository.InsertAsync(productToCreate);
         await _baseRepository.SaveChangeAsync();
+
+        return _mapper.Map<ReadProduct>(productToCreate);
     }
 
     public async Task<ReadProduct?> GetByIdAsync(Guid id)
@@ -26,15 +30,30 @@ public class ProductService : IProductService
         return _mapper.Map<IEnumerable<ReadProduct>>(await _baseRepository.GetAsync(filter, orderBy, includeProperties));
     }
 
-    public async Task MarkAsDeleted(Product product)
+    public async Task<bool> MarkAsDeletedAsync(Guid id)
     {
-        product.IsDeleted = true;
-        await UpdateAsync(product);
+        var productToDelete = await _baseRepository.GetByIdAsync(id);
+
+        if (productToDelete is null) return false;
+
+        productToDelete.IsDeleted = true;
+        _baseRepository.Update(productToDelete);
+        await _baseRepository.SaveChangeAsync();
+
+        return true;
     }
 
-    public async Task UpdateAsync(Product product)
+    public async Task<bool> UpdateAsync(UpdateProduct updateProduct)
     {
-        _baseRepository.Update(product);
+        var productToUpdate = await _baseRepository.GetByIdAsync(updateProduct.Id);
+
+        if (productToUpdate is null) return false;
+
+        productToUpdate = _mapper.Map<Product>(updateProduct);
+
+        _baseRepository.Update(productToUpdate);
         await _baseRepository.SaveChangeAsync();
+
+        return true;
     }
 }

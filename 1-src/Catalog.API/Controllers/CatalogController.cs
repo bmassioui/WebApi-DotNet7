@@ -1,35 +1,42 @@
-﻿using Catalog.API.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace Catalog.API.Controllers;
 
 [Produces("application/json")]
 public class CatalogController : ApiBaseController
 {
-    public CatalogController(IProductService productService) : base(productService)
-    { }
+    public CatalogController(IProductService productService) : base(productService) { }
 
     /// <summary>
-    /// Get proucts asynchronously
+    /// Get products asynchronously
     /// </summary>
+    /// <param name="includeDeleted">True: to include soft deleted products, otherwise FALSE</param>
     /// <returns>List of product sorted by creation date DESC</returns>
     /// <response code="200">Returns the list of product sorted by creation date DESC</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ReadProduct>>> Get()
+    public async Task<ActionResult<IEnumerable<ReadProduct>>> Get(bool includeDeleted)
     {
-        var products = await _productService.GetProductsAsync(orderBy: products => products.OrderByDescending(product => product.CreatedAt));
+        Expression<Func<Product, bool>>? filter = (!includeDeleted ? product => !product.IsDeleted : null);
+
+        var products = await _productService.GetProductsAsync(filter, orderBy);
 
         return Ok(products);
+
+        static IOrderedQueryable<Product> orderBy(IQueryable<Product> products)
+        {
+            return products.OrderByDescending(product => product.CreatedAt);
+        }
     }
 
     /// <summary>
-    /// Get Product by ID asynchronously
+    /// Get product by ID asynchronously
     /// </summary>
     /// <param name="productId">Product's ID</param>
     /// <returns>Product's details</returns>
     /// <response code="200">Returns the product's details</response>
-    /// <response code="404">If no product found</response>
+    /// <response code="404">If no product could be found</response>
     [HttpGet("{productId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -40,24 +47,22 @@ public class CatalogController : ApiBaseController
         return
             product is not null ?
             Ok(product) :
-            NotFound($"No Product with the given (ID:{productId}) could be found.");
+            NotFound($"No Product with the given ID:'{productId}' could be found.");
     }
 
     /// <summary>
-    /// Add product to catalog asynchronously
+    /// Add product asynchronously
     /// </summary>
     /// <param name="product">Product to add</param>
     /// <returns>Product's details</returns>
     /// <response code="201">Product's details</response>
-    /// <response code="400">Unable to add product</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Product>> Add(Product product)
+    public async Task<ActionResult<ReadProduct>> Add(AddProduct product)
     {
-        await _productService.AddAsync(product);
+        var addedProduct = await _productService.AddAsync(product);
 
-        return CreatedAtAction(nameof(Get), new { product.Id }, product);
+        return CreatedAtAction(nameof(Get), new { addedProduct.Id }, addedProduct);
     }
 
     /// <summary>
@@ -65,14 +70,19 @@ public class CatalogController : ApiBaseController
     /// </summary>
     /// <returns></returns>
     /// <response code="204">The update done successfully</response>
-    /// <response code="404">If no product found</response>
+    /// <response code="404">If no product could be found</response>
     /// <response code="400">Unable to update product</response>
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Put(Guid productId, UpdateProduct product)
+    public async Task<IActionResult> Put(Guid productId, UpdateProduct product)
     {
+        // PUT request requires the client to send the entire updated entity, not just the changes. To support partial updates, use HTTP PATCH.
+        if (productId != product.Id) return BadRequest($"Payload invalid, please make sure that, productId:'{productId}' is equal to product.id:'{product.Id}'.");
+
+        if (!await _productService.UpdateAsync(product)) return NotFound($"No Product with the given ID:'{productId}' could be found.");
+
         return NoContent();
     }
 
@@ -82,14 +92,18 @@ public class CatalogController : ApiBaseController
     /// <param name="productId">Product's ID</param>
     /// <returns></returns>
     /// <response code="204">The deletion done successfully</response>
-    /// <response code="404">If no product found</response>
-    /// <response code="400">Unable to delete product</response>
+    /// <response code="404">If no product could be found</response>
     [HttpDelete("{productId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Delete(Guid productId)
+    public async Task<IActionResult> Delete(Guid productId)
     {
+        var productToDelete = await _productService.GetByIdAsync(productId);
+
+        if (productToDelete is null) return NotFound($"No Product with the given ID:'{productId}' could be found.");
+
+        await _productService.MarkAsDeletedAsync(productId);
+
         return NoContent();
     }
-}
+} 
